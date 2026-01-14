@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import PostCard from '../components/PostCard';
+
 import {
   View,
   Text,
@@ -31,12 +33,9 @@ const HomeScreen: React.FC = () => {
     loadPosts();
   }, []);
 
-  const renderItem: ListRenderItem<Post> = ({ item }) => (
-    <View style={styles.card}>
-      <Text style={styles.title}>{item.title}</Text>
-      <Text>{item.body}</Text>
-    </View>
-  );
+const renderItem: ListRenderItem<Post> = ({ item }) => (
+<PostCard title={item.title} body={item.body} />
+);
 
   return (
     <View style={styles.container}>
