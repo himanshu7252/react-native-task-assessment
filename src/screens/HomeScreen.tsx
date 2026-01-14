@@ -13,7 +13,11 @@ import PostCard from '../components/PostCard';
 import { Post } from '../types/Post';
 import { saveSearch, getSearch } from '../utiils/storage';
 
-const HomeScreen: React.FC = () => {
+interface HomeScreenProps {
+  navigation: any;
+}
+
+const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [search, setSearch] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
@@ -59,10 +63,34 @@ const loadPosts = async () => {
   }
 };
 
+  // Group posts by userId
+  const groupedPosts = posts.reduce((acc, post) => {
+    if (!acc[post.userId]) {
+      acc[post.userId] = [];
+    }
+    acc[post.userId].push(post);
+    return acc;
+  }, {} as Record<number, Post[]>);
 
-  const filteredPosts = posts.filter(post =>
-    post.title.toLowerCase().includes(search.toLowerCase())
-  );
+  // Filter by search term
+  const filteredGroupedPosts = Object.entries(groupedPosts).reduce((acc, [userId, userPosts]) => {
+    const filteredUserPosts = userPosts.filter(post =>
+      post.title.toLowerCase().includes(search.toLowerCase())
+    );
+    if (filteredUserPosts.length > 0) {
+      acc[userId] = filteredUserPosts;
+    }
+    return acc;
+  }, {} as Record<string, Post[]>);
+
+  const userPostsArray = Object.entries(filteredGroupedPosts).map(([userId, userPosts]) => ({
+    userId: parseInt(userId),
+    posts: userPosts,
+  }));
+
+  const handlePostPress = (post: Post) => {
+    navigation.navigate('PostDetail', { post });
+  };
 
   if (loading) {
     return (
@@ -88,12 +116,14 @@ const loadPosts = async () => {
       </View>
 
       <FlatList
-        data={filteredPosts}
-        keyExtractor={(item) => item.id.toString()}
+        data={userPostsArray}
+        keyExtractor={(item) => item.userId.toString()}
         renderItem={({ item }) => (
           <PostCard 
-          userId ={item.userId}
-          title={item.title} body={item.body} />
+            userId={item.userId}
+            posts={item.posts}
+            onPostPress={handlePostPress}
+          />
         )}
         refreshing={loading}
         onRefresh={loadPosts}
