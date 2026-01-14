@@ -1,97 +1,255 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# RNPostsApp
 
-# Getting Started
+A React Native application that displays posts from [JSONPlaceholder API](https://jsonplaceholder.typicode.com/posts), organized by user with an elegant UI featuring horizontal scrolling cards, search functionality, and detailed post views.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Features
 
-## Step 1: Start Metro
+- **User-Grouped Posts**: Posts are automatically grouped by userId and displayed in separate sections
+- **Horizontal Scrolling**: Each user's posts scroll horizontally within their card, while users scroll vertically
+- **Smart Text Truncation**: 
+  - Post titles are limited to 2 lines with ellipsis
+  - Post bodies are limited to 4 lines with ellipsis
+- **Post Details Navigation**: Tap "Read more" to view the full post content on a dedicated detail screen
+- **Search Functionality**: Search posts by title or body with persistent search history using AsyncStorage
+- **Skeleton Loader**: Professional loading UI with pulse animation that matches the actual card structure
+- **Fixed Card Layout**: Cards have a consistent 220px height with buttons positioned at the bottom
+- **Network Configuration**: Configured for both secure and cleartext HTTP traffic
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Tech Stack
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- **React Native**: 0.83.1 with New Architecture enabled
+- **React Navigation**: Native Stack Navigator for screen transitions
+- **TypeScript**: Full type safety across the codebase
+- **AsyncStorage**: Persistent local data storage
+- **Axios**: HTTP client for API requests
+- **Animated API**: Smooth skeleton loader animations
 
-```sh
-# Using npm
-npm start
+## Project Structure
 
-# OR using Yarn
-yarn start
+```
+RNPostsApp/
+├── src/
+│   ├── components/
+│   │   ├── PostCard.tsx          # Horizontal scrolling post cards
+│   │   └── SkeletonLoader.tsx    # Animated loading placeholder
+│   ├── screens/
+│   │   ├── HomeScreen.tsx        # Main screen with grouped posts
+│   │   └── PostDetailScreen.tsx  # Full post detail view
+│   ├── services/
+│   │   └── postService.ts        # API service for fetching posts
+│   ├── types/
+│   │   └── Post.ts               # TypeScript interfaces
+│   └── utils/
+│       └── storage.ts            # AsyncStorage utilities
+├── android/                      # Android native configuration
+├── ios/                          # iOS native configuration
+└── App.tsx                       # Root component with navigation
 ```
 
-## Step 2: Build and run your app
+## Prerequisites
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+Before you begin, ensure you have completed the [React Native Environment Setup](https://reactnative.dev/docs/set-up-your-environment).
+
+**Required:**
+- Node.js >= 20
+- npm or yarn
+- Android Studio (for Android development)
+- Xcode (for iOS development, macOS only)
+- JDK 17 or higher
+
+## Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd RNPostsApp
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **For iOS** (macOS only):
+   ```bash
+   # Install Ruby bundler
+   bundle install
+   
+   # Install CocoaPods dependencies
+   cd ios
+   bundle exec pod install
+   cd ..
+   ```
+
+## Running the App
 
 ### Android
 
-```sh
-# Using npm
-npm run android
+1. **Start Metro bundler**:
+   ```bash
+   npm start
+   ```
 
-# OR using Yarn
-yarn android
-```
+2. **In a new terminal, run the app**:
+   ```bash
+   npm run android
+   ```
+
+   Or use the React Native CLI directly:
+   ```bash
+   npx react-native run-android
+   ```
 
 ### iOS
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+1. **Start Metro bundler**:
+   ```bash
+   npm start
+   ```
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+2. **In a new terminal, run the app**:
+   ```bash
+   npm run ios
+   ```
 
-```sh
-bundle install
+   Or use the React Native CLI directly:
+   ```bash
+   npx react-native run-ios
+   ```
+
+## Development
+
+### Clear Metro Cache
+
+If you encounter bundler issues, clear the Metro cache:
+
+```bash
+npx react-native start --reset-cache
 ```
 
-Then, and every time you update your native dependencies, run:
+### Clean Build
 
-```sh
-bundle exec pod install
+For Android:
+```bash
+cd android
+./gradlew clean
+cd ..
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+### Reload the App
 
-```sh
-# Using npm
-npm run ios
+- **Android**: Press <kbd>R</kbd> twice or <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) / <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS) to open the Dev Menu
+- **iOS**: Press <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in the iOS Simulator
 
-# OR using Yarn
-yarn ios
+## Key Components
+
+### HomeScreen
+The main screen that:
+- Fetches posts from the API
+- Groups posts by userId
+- Displays skeleton loaders during data fetch
+- Implements search functionality with filter
+- Handles navigation to post details
+
+### PostCard
+A reusable component that:
+- Displays a user's posts in a horizontal scrollable list
+- Shows user badge and post count
+- Truncates title (2 lines) and body (4 lines)
+- Provides "Read more" button for navigation
+
+### PostDetailScreen
+Detail screen that:
+- Shows complete post title and body
+- Includes back navigation button
+- Provides full content view without truncation
+
+### SkeletonLoader
+Loading component that:
+- Displays 3 animated placeholder cards
+- Matches the actual PostCard layout structure
+- Uses Animated API for smooth pulse effect
+- Scrolls horizontally like real posts
+
+## API Integration
+
+The app fetches data from the [JSONPlaceholder API](https://jsonplaceholder.typicode.com):
+- **Endpoint**: `https://jsonplaceholder.typicode.com/posts`
+- **Method**: GET
+- **Response**: Array of Post objects
+
+## Android Configuration
+
+### Network Security
+The app is configured to support cleartext traffic for the JSONPlaceholder API:
+- Network security config: `android/app/src/main/res/xml/network_security_config.xml`
+- Permissions: `INTERNET`, `ACCESS_NETWORK_STATE`
+
+### Gradle
+- Gradle version: 9.0.0
+- Removed deprecated `package` attribute from AndroidManifest.xml
+
+## Troubleshooting
+
+### Network Request Failed
+- Ensure your emulator/device has internet connectivity
+- For Android emulator: Restart with proper DNS settings
+- Check network security configuration
+
+### Module Not Found
+```bash
+# Clear cache and reinstall
+rm -rf node_modules
+npm install
+npx react-native start --reset-cache
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Android Build Errors
+```bash
+cd android
+./gradlew clean
+cd ..
+npx react-native run-android
+```
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+### Metro Bundler Error 500
+```bash
+# Kill Metro process and restart with cache reset
+npx react-native start --reset-cache
+```
 
-## Step 3: Modify your app
+## Dependencies
 
-Now that you have successfully run the app, let's make changes!
+### Core
+- `react`: 19.2.0
+- `react-native`: 0.83.1
+- `@react-navigation/native`: ^7.1.27
+- `@react-navigation/native-stack`: ^7.9.1
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+### UI & Navigation
+- `react-native-screens`: ^4.19.0
+- `react-native-safe-area-context`: ^5.6.2
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+### Storage & Network
+- `@react-native-async-storage/async-storage`: ^2.2.0
+- `axios`: ^1.13.2
+- `whatwg-fetch`: ^3.6.20
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+## Scripts
 
-## Congratulations! :tada:
+- `npm start` - Start Metro bundler
+- `npm run android` - Run on Android
+- `npm run ios` - Run on iOS
+- `npm test` - Run tests
+- `npm run lint` - Run ESLint
 
-You've successfully run and modified your React Native App. :partying_face:
+## License
 
-### Now what?
+This project is for educational/demonstration purposes.
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+## Learn More
 
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- [React Native Documentation](https://reactnative.dev/)
+- [React Navigation](https://reactnavigation.org/)
+- [TypeScript Documentation](https://www.typescriptlang.org/)
+- [JSONPlaceholder API](https://jsonplaceholder.typicode.com/)
