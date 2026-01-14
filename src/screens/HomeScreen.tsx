@@ -10,6 +10,7 @@ import {
 
 import { fetchPosts } from '../services/postService';
 import PostCard from '../components/PostCard';
+import SkeletonLoader from '../components/SkeletonLoader';
 import { Post } from '../types/Post';
 import { saveSearch, getSearch } from '../utiils/storage';
 
@@ -94,8 +95,20 @@ const loadPosts = async () => {
 
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" />
+      <View style={styles.container}>
+        <View style={styles.searchContainer}>
+          <Text style={styles.searchIcon}>🔍</Text>
+          <TextInput
+            placeholder="Search posts..."
+            value={search}
+            editable={false}
+            style={styles.search}
+            placeholderTextColor="#999"
+          />
+        </View>
+        <SkeletonLoader />
+        <SkeletonLoader />
+        <SkeletonLoader />
       </View>
     );
   }
